@@ -1,0 +1,6 @@
+#! /bin/sh
+VERSION=1.0.0
+PROGRAM=gunzip
+echo "#define VERSION \"$VERSION\"" > src/version.h
+echo "gunzip    1.0.0  Uncompress gzip file"  > src/ipkg/$PROGRAM.csv
+echo up4 
