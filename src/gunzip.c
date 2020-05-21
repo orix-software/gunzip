@@ -288,7 +288,7 @@ int main(int argc,char *argv[])
         }
 #endif /* __CC65__ */
 
-        
+        printf("This version can unzip only file smaller than %d bytes.",GZIP_BUFFER);
         printf("File : %s\n",argv[1]);
       
         for (i=0;i<strlen(argv[1]);i++)
