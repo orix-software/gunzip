@@ -9,4 +9,4 @@
 limits : Max 21KB for the gz file
 
 ## SOURCE
-https://github.com/oric-software/gunzip.git
+https://github.com/orix-software/gunzip.git
