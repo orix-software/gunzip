@@ -195,7 +195,7 @@ char* get_fname(void)
 
 void version()
 {
-  printf("gunpack %s\n",VERSION);
+  printf("gunzip %s\n",VERSION);
 }
 
 void usage()
