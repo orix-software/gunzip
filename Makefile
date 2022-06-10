@@ -20,7 +20,8 @@ ASFLAGS=-C -W -e error.txt -l xa_labels.txt -DTARGET_ORIX
 
 $(PROGRAM): $(SOURCE)
 	$(CC) -o $(PROGRAM) $(CFLAGS) $(LDFILES) $(SOURCE)
-
+	mkdir build/bin -p && mv gunzip build/bin
+	mkdir build/usr/share/man -p && cp src/man/gunzip.hlp build/usr/share/man
   
 test:
 	mkdir -p build/bin/
