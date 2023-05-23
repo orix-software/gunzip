@@ -5,6 +5,8 @@ PROGRAM=gunzip
 SOURCE=src/$(PROGRAM).c
 LDFILES=
 
+START_ADDR ?= 0x1000
+
 ifeq ($(CC65_HOME),)
         CC = cl65
         AS = ca65
@@ -18,9 +20,8 @@ else
 endif
 
 $(PROGRAM): $(SOURCE)
-	$(CC) -o $(PROGRAM) $(CFLAGS) $(LDFILES) $(SOURCE)
+	$(CC) -o $(PROGRAM) $(CFLAGS) $(LDFILES) $(SOURCE) --start-addr $(START_ADDR)
 	mkdir build/bin -p && mv gunzip build/bin
-	mkdir build/usr/share/man -p && cp src/man/gunzip.hlp build/usr/share/man
 
 clean:
 	rm -rf build

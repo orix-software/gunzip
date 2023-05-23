@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "version.h"
 #include <unistd.h>
+#include <conio.h>
 
 unsigned char version_opt=0;
 unsigned char help_opt=0;
@@ -179,8 +180,7 @@ unsigned uncompress_buffer(unsigned complen)
 /*
 ** Get a filename from standard input.
 */
-char* get_fname(void)
-{
+char* get_fname(void) {
         static char filename[100];
         unsigned len;
         return NULL;
@@ -285,12 +285,10 @@ int main(int argc,char *argv[])
         }
 #endif /* __CC65__ */
 
-        printf("This version can unzip only file smaller than %d bytes.",GZIP_BUFFER);
+        printf("This version can gunzip only file smaller than %d bytes.\n", GZIP_BUFFER);
         printf("File : %s\n",argv[1]);
 
-        for (i=0;i<strlen(argv[1]);i++)
-        {
-          //printf("%d X%c\n",i,argv[1][i]);
+        for (i=0;i<strlen(argv[1]);i++) {
           if (argv[1][i]=='\0') break;
           if (argv[1][i]=='.') break;
 
@@ -305,11 +303,13 @@ int main(int argc,char *argv[])
                 printf("Can't open GZIP file\n");
                 return 1;
         }
+
         length = fread(buffer, GZIP_BUFFER, 1, fp);
-        printf("open %d bytes read\n",length);
+
+        printf("open %d bytes read\n", length);
         fclose(fp);
         if (length == sizeof(buffer)) {
-                printf("File is too long\n");
+                printf("File is too big\n");
                 return 1;
         }
 
@@ -325,7 +325,7 @@ int main(int argc,char *argv[])
                 printf("Can't create output file\n");
                 return 1;
         }
-        nb_write=fwrite(buffer, 1, length, fp);
+        nb_write = fwrite(buffer, 1, length, fp);
         if (nb_write != length) {
                printf("Error while writing output file writing %u bytes, but fwrite returns %u bytes\n",length,nb_write);
                 return 1;
