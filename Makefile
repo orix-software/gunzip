@@ -22,3 +22,8 @@ $(PROGRAM): $(SOURCE)
 	mkdir build/bin -p && mv gunzip build/bin
 	mkdir build/usr/share/man -p && cp src/man/gunzip.hlp build/usr/share/man
 
+clean:
+	rm -rf build
+
+configure:
+	echo configure

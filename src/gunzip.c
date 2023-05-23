@@ -119,12 +119,12 @@ unsigned uncompress_buffer(unsigned complen)
 
         /* get uncompressed length from GZIP trailer */
         unclen = GET_LONG(buffer + complen - 4);
-		
+
         if (unclen > sizeof(buffer)) {
                 printf("Uncompressed size too big. Requested %lu bytes in memory, but buffer is %u bytes.\n",unclen,sizeof(buffer));
                 return 0;
         }
-	
+
 
         /* skip extra field, file name, comment and crc */
         ptr = buffer + 10;
@@ -181,7 +181,6 @@ unsigned uncompress_buffer(unsigned complen)
 */
 char* get_fname(void)
 {
-        
         static char filename[100];
         unsigned len;
         return NULL;
@@ -209,26 +208,26 @@ unsigned char getopts(char *arg)
 {
   // 2: arg is not an option
   if (arg[0]!='-') return 2;
-  if (strcmp(arg,"--version")==0 || strcmp(arg,"-v")==0) 
+  if (strcmp(arg,"--version")==0 || strcmp(arg,"-v") == 0)
   {
     version_opt=1;
     return 0;
   }
-  
-  if (strcmp(arg,"--help")==0 || strcmp(arg,"-h")==0) 
+
+  if (strcmp(arg,"--help")==0 || strcmp(arg,"-h")==0)
   {
     help_opt=1;
     return 0;
-  }  
+  }
 
   return 1;
-  
+
 }
 
-    
+
 int main(int argc,char *argv[])
 {
-    
+
   FILE* fp;
   unsigned int length;
   unsigned int nb_write;
@@ -240,16 +239,16 @@ int main(int argc,char *argv[])
     for (i=1;i<argc;i++)
     {
       ret=getopts(argv[i]);
-      if (ret==1) 
+      if (ret==1)
       {
         //this is a parameter but not recognized
         usage();
         return 1;
       }
-      if (ret==2) 
+      if (ret==2)
       {
         //theses are to stop if we have 2 folders on commands line, in the future it will bepossible
-        if (found_a_folder_in_arg_found==0) 
+        if (found_a_folder_in_arg_found==0)
             found_a_folder_in_arg_found=1;
         else
         {
@@ -271,14 +270,12 @@ int main(int argc,char *argv[])
     version();
     return 0;
   }
-  
+
   if (help_opt==1)
   {
     usage();
     return 0;
-  }  
-  
- //   unpack();
+  }
 
 
 #ifdef __CC65__
@@ -290,19 +287,19 @@ int main(int argc,char *argv[])
 
         printf("This version can unzip only file smaller than %d bytes.",GZIP_BUFFER);
         printf("File : %s\n",argv[1]);
-      
+
         for (i=0;i<strlen(argv[1]);i++)
         {
           //printf("%d X%c\n",i,argv[1][i]);
           if (argv[1][i]=='\0') break;
           if (argv[1][i]=='.') break;
-          
+
           destfilename[i]=argv[1][i];
         }
-       // i++;
+
         destfilename[i]='\0';
         printf("Output filename :  %s\n",destfilename);
-      
+
         fp = fopen(argv[1], "r");
         if (fp==NULL) {
                 printf("Can't open GZIP file\n");
@@ -321,7 +318,6 @@ int main(int argc,char *argv[])
         if (length == 0)
                 return 1;
 
-              
         /* write uncompressed file */
         //printf("Uncompressed file name:\n");
         fp = fopen(destfilename, "wb");
@@ -338,7 +334,7 @@ int main(int argc,char *argv[])
 
         printf("Ok.\n");
 
-  
+
   return(0);
 }
 
