@@ -22,8 +22,7 @@ unsigned char p_opt=0;
 ** Emulate inflatemem() if using original zlib.
 ** As you can see, this program is quite portable.
 */
-unsigned inflatemem(char* dest, const char* source)
-{
+unsigned inflatemem(char* dest, const char* source) {
         z_stream stream;
 
         stream.next_in = (Bytef*) source;
@@ -76,7 +75,7 @@ unsigned inflatemem(char* dest, const char* source)
 ** We read whole GZIP file into this buffer.
 ** Then we use this buffer for the decompressed data.
 */
-static unsigned char buffer[GZIP_BUFFER];
+unsigned char buffer[GZIP_BUFFER];
 
 /*
 ** Get a 16-bit little-endian unsigned number, using unsigned char* p.
@@ -197,25 +196,21 @@ void version()
   printf("gunzip %s\n",VERSION);
 }
 
-void usage()
-{
+void usage() {
   printf("usage:\n");
   printf("gunzip filein\n");
   return;
 }
 
-unsigned char getopts(char *arg)
-{
+unsigned char getopts(char *arg) {
   // 2: arg is not an option
   if (arg[0]!='-') return 2;
-  if (strcmp(arg,"--version")==0 || strcmp(arg,"-v") == 0)
-  {
+  if (strcmp(arg,"--version")==0 || strcmp(arg,"-v") == 0) {
     version_opt=1;
     return 0;
   }
 
-  if (strcmp(arg,"--help")==0 || strcmp(arg,"-h")==0)
-  {
+  if (strcmp(arg,"--help")==0 || strcmp(arg,"-h")==0) {
     help_opt=1;
     return 0;
   }
@@ -224,34 +219,29 @@ unsigned char getopts(char *arg)
 
 }
 
+unsigned int length;
 
-int main(int argc,char *argv[])
-{
+int main(int argc,char *argv[]) {
 
-  FILE* fp;
-  unsigned int length;
+  FILE *fp;
+
   unsigned int nb_write;
   unsigned char i,ret,found_a_folder_in_arg_found=0,start=1;
   static unsigned char destfilename[9];
 
-  if (argc==2 || argc==3)
-  {
-    for (i=1;i<argc;i++)
-    {
+  if (argc==2 || argc==3) {
+    for (i=1;i<argc;i++) {
       ret=getopts(argv[i]);
-      if (ret==1)
-      {
+      if (ret==1) {
         //this is a parameter but not recognized
         usage();
         return 1;
       }
-      if (ret==2)
-      {
+      if (ret==2) {
         //theses are to stop if we have 2 folders on commands line, in the future it will bepossible
         if (found_a_folder_in_arg_found==0)
             found_a_folder_in_arg_found=1;
-        else
-        {
+        else {
           // here we found 2 folders on the command line
           usage();
           return 1;
@@ -259,20 +249,17 @@ int main(int argc,char *argv[])
       }
     }
   }
-    else
-    {
+    else {
      usage();
      return 1;
     }
 
-  if (version_opt==1)
-  {
+  if (version_opt==1) {
     version();
     return 0;
   }
 
-  if (help_opt==1)
-  {
+  if (help_opt==1) {
     usage();
     return 0;
   }
@@ -300,21 +287,25 @@ int main(int argc,char *argv[])
 
         fp = fopen(argv[1], "r");
         if (fp==NULL) {
-                printf("Can't open GZIP file\n");
+                printf("Can't open GZIP file %s\n",argv[1]);
                 return 1;
         }
 
-        length = fread(buffer, GZIP_BUFFER, 1, fp);
+        // D0AB $2227
+
+        length = fread(buffer,1, GZIP_BUFFER, fp);
 
         printf("open %d bytes read\n", length);
+
         fclose(fp);
-        if (length == sizeof(buffer)) {
-                printf("File is too big\n");
-                return 1;
-        }
+        // if (length == sizeof(buffer)) {
+        //         printf("File is too big\n");
+        //         return 1;
+        // }
 
         /* decompress */
         length = uncompress_buffer(length);
+        printf("Length :  %u bytes\n",length);
         if (length == 0)
                 return 1;
 
