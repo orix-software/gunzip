@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "version.h"
 #include <unistd.h>
+#include <conio.h>
 
 unsigned char version_opt=0;
 unsigned char help_opt=0;
@@ -21,8 +22,7 @@ unsigned char p_opt=0;
 ** Emulate inflatemem() if using original zlib.
 ** As you can see, this program is quite portable.
 */
-unsigned inflatemem(char* dest, const char* source)
-{
+unsigned inflatemem(char* dest, const char* source) {
         z_stream stream;
 
         stream.next_in = (Bytef*) source;
@@ -75,7 +75,7 @@ unsigned inflatemem(char* dest, const char* source)
 ** We read whole GZIP file into this buffer.
 ** Then we use this buffer for the decompressed data.
 */
-static unsigned char buffer[GZIP_BUFFER];
+unsigned char buffer[GZIP_BUFFER];
 
 /*
 ** Get a 16-bit little-endian unsigned number, using unsigned char* p.
@@ -119,12 +119,12 @@ unsigned uncompress_buffer(unsigned complen)
 
         /* get uncompressed length from GZIP trailer */
         unclen = GET_LONG(buffer + complen - 4);
-		
+
         if (unclen > sizeof(buffer)) {
                 printf("Uncompressed size too big. Requested %lu bytes in memory, but buffer is %u bytes.\n",unclen,sizeof(buffer));
                 return 0;
         }
-	
+
 
         /* skip extra field, file name, comment and crc */
         ptr = buffer + 10;
@@ -179,9 +179,7 @@ unsigned uncompress_buffer(unsigned complen)
 /*
 ** Get a filename from standard input.
 */
-char* get_fname(void)
-{
-        
+char* get_fname(void) {
         static char filename[100];
         unsigned len;
         return NULL;
@@ -198,61 +196,52 @@ void version()
   printf("gunzip %s\n",VERSION);
 }
 
-void usage()
-{
+void usage() {
   printf("usage:\n");
   printf("gunzip filein\n");
   return;
 }
 
-unsigned char getopts(char *arg)
-{
+unsigned char getopts(char *arg) {
   // 2: arg is not an option
   if (arg[0]!='-') return 2;
-  if (strcmp(arg,"--version")==0 || strcmp(arg,"-v")==0) 
-  {
+  if (strcmp(arg,"--version")==0 || strcmp(arg,"-v") == 0) {
     version_opt=1;
     return 0;
   }
-  
-  if (strcmp(arg,"--help")==0 || strcmp(arg,"-h")==0) 
-  {
+
+  if (strcmp(arg,"--help")==0 || strcmp(arg,"-h")==0) {
     help_opt=1;
     return 0;
-  }  
+  }
 
   return 1;
-  
+
 }
 
-    
-int main(int argc,char *argv[])
-{
-    
-  FILE* fp;
-  unsigned int length;
+unsigned int length;
+
+int main(int argc,char *argv[]) {
+
+  FILE *fp;
+
   unsigned int nb_write;
   unsigned char i,ret,found_a_folder_in_arg_found=0,start=1;
   static unsigned char destfilename[9];
 
-  if (argc==2 || argc==3)
-  {
-    for (i=1;i<argc;i++)
-    {
+  if (argc==2 || argc==3) {
+    for (i=1;i<argc;i++) {
       ret=getopts(argv[i]);
-      if (ret==1) 
-      {
+      if (ret==1) {
         //this is a parameter but not recognized
         usage();
         return 1;
       }
-      if (ret==2) 
-      {
+      if (ret==2) {
         //theses are to stop if we have 2 folders on commands line, in the future it will bepossible
-        if (found_a_folder_in_arg_found==0) 
+        if (found_a_folder_in_arg_found==0)
             found_a_folder_in_arg_found=1;
-        else
-        {
+        else {
           // here we found 2 folders on the command line
           usage();
           return 1;
@@ -260,25 +249,20 @@ int main(int argc,char *argv[])
       }
     }
   }
-    else
-    {
+    else {
      usage();
      return 1;
     }
 
-  if (version_opt==1)
-  {
+  if (version_opt==1) {
     version();
     return 0;
   }
-  
-  if (help_opt==1)
-  {
+
+  if (help_opt==1) {
     usage();
     return 0;
-  }  
-  
- //   unpack();
+  }
 
 
 #ifdef __CC65__
@@ -288,40 +272,43 @@ int main(int argc,char *argv[])
         }
 #endif /* __CC65__ */
 
-        printf("This version can unzip only file smaller than %d bytes.",GZIP_BUFFER);
+        printf("This version can gunzip only file smaller than %d bytes.\n", GZIP_BUFFER);
         printf("File : %s\n",argv[1]);
-      
-        for (i=0;i<strlen(argv[1]);i++)
-        {
-          //printf("%d X%c\n",i,argv[1][i]);
+
+        for (i=0;i<strlen(argv[1]);i++) {
           if (argv[1][i]=='\0') break;
           if (argv[1][i]=='.') break;
-          
+
           destfilename[i]=argv[1][i];
         }
-       // i++;
+
         destfilename[i]='\0';
         printf("Output filename :  %s\n",destfilename);
-      
+
         fp = fopen(argv[1], "r");
         if (fp==NULL) {
-                printf("Can't open GZIP file\n");
+                printf("Can't open GZIP file %s\n",argv[1]);
                 return 1;
         }
-        length = fread(buffer, GZIP_BUFFER, 1, fp);
-        printf("open %d bytes read\n",length);
+
+        // D0AB $2227
+
+        length = fread(buffer,1, GZIP_BUFFER, fp);
+
+        printf("open %d bytes read\n", length);
+
         fclose(fp);
-        if (length == sizeof(buffer)) {
-                printf("File is too long\n");
-                return 1;
-        }
+        // if (length == sizeof(buffer)) {
+        //         printf("File is too big\n");
+        //         return 1;
+        // }
 
         /* decompress */
         length = uncompress_buffer(length);
+        printf("Length :  %u bytes\n",length);
         if (length == 0)
                 return 1;
 
-              
         /* write uncompressed file */
         //printf("Uncompressed file name:\n");
         fp = fopen(destfilename, "wb");
@@ -329,7 +316,7 @@ int main(int argc,char *argv[])
                 printf("Can't create output file\n");
                 return 1;
         }
-        nb_write=fwrite(buffer, 1, length, fp);
+        nb_write = fwrite(buffer, 1, length, fp);
         if (nb_write != length) {
                printf("Error while writing output file writing %u bytes, but fwrite returns %u bytes\n",length,nb_write);
                 return 1;
@@ -338,7 +325,7 @@ int main(int argc,char *argv[])
 
         printf("Ok.\n");
 
-  
+
   return(0);
 }
 

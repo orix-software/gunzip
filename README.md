@@ -1,4 +1,6 @@
 # gunzip
 
-[![Build Status](https://travis-ci.org/orix-software/gunzip.svg?branch=master)](https://travis-ci.org/orix-software/gunzip)
+Github action : [![build](https://github.com/orix-software/gunzip/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/orix-software/gunzip/actions/workflows/main.yml)
+
+
 

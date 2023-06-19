@@ -1,3 +1,0 @@
-                                                                                 
-  ORIX    1.0    Command: gunzip     
-  ORIX    1.0    Command: gunzip                                                    uncompress gzip files                                                Syntax :  #gunzip file                                                                                                                                                                                                                         Examples: gunzip myfile                                                        Src code : https://github.com/oric-software/gunzip.git
