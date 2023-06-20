@@ -161,8 +161,8 @@ unsigned uncompress_buffer(unsigned complen)
 
         /* verify uncompressed length */
         if (unclen2 != (unsigned) unclen) {
-                printf("Uncompressed size does not match in the header : %d bytes but when deflating %d bytes\n",unclen,unclen2);
-                return 0;
+                printf("!WARNING! Uncompressed size does not match in the header : %d bytes but when deflating %d bytes\n",unclen,unclen2);
+                //return 0;
         }
 
         /* verify CRC */
