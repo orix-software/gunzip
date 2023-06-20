@@ -4,3 +4,4 @@ Github action : [![build](https://github.com/orix-software/gunzip/actions/workfl
 
 
 
+ar vx gunzip.deb
