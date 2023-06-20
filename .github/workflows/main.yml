@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Cache sdk
         id: cache-sdk
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
              cc65/**/*
@@ -101,7 +101,7 @@ jobs:
           echo "::set-output name=REPO_NAME::${GITHUB_REPOSITORY##*/}"
 
       - name: Install sdk
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
              cc65/**/*
@@ -120,7 +120,7 @@ jobs:
         run: ls -lR build
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.job_vars.outputs.REPO_NAME }}
           path: |
@@ -158,7 +158,7 @@ jobs:
       # On pourrait faire l'extraction directement à la racine si VERSION est dans l'artifact
       - name: Download Artifact
         id: download
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ needs.build.outputs.repo_name }}
           path: artifact
@@ -171,4 +171,5 @@ jobs:
         run: |
            if [ "$BRANCH_NAME" = "master" -o "$BRANCH_NAME" = "main" ]; then VERSION="$version"; else VERSION=alpha ; fi
            curl -X POST --data-binary "@${ARCHIVE_NAME}" "https://cdn.oric.org/publish.php?hash=$hash&path=/home/oricoujr/www/ftp/orix/dists/$VERSION/tgz/6502/${ARCHIVE_NAME}"
+           curl -X POST --data-binary "@${repo_name}.deb" "https://cdn.oric.org/publish.php?hash=$hash&path=/home/oricoujr/www/ftp/orix/dists/$VERSION/pkg/6502/${ARCHIVE_NAME}"
 

@@ -8,7 +8,7 @@ unsigned char version_opt=0;
 unsigned char help_opt=0;
 unsigned char p_opt=0;
 
-#define GZIP_BUFFER 21000
+#define GZIP_BUFFER 11000
 
 #include <zlib.h>
 
@@ -223,46 +223,46 @@ unsigned int length;
 
 int main(int argc,char *argv[]) {
 
-  FILE *fp;
+        FILE *fp;
 
-  unsigned int nb_write;
-  unsigned char i,ret,found_a_folder_in_arg_found=0,start=1;
-  static unsigned char destfilename[9];
+        unsigned int nb_write;
+        unsigned char i,ret,found_a_folder_in_arg_found=0,start=1;
+        static unsigned char destfilename[9];
 
-  if (argc==2 || argc==3) {
-    for (i=1;i<argc;i++) {
-      ret=getopts(argv[i]);
-      if (ret==1) {
-        //this is a parameter but not recognized
+        if (argc==2 || argc==3) {
+        for (i=1;i<argc;i++) {
+        ret=getopts(argv[i]);
+        if (ret==1) {
+                //this is a parameter but not recognized
+                usage();
+                return 1;
+        }
+        if (ret==2) {
+                //theses are to stop if we have 2 folders on commands line, in the future it will bepossible
+                if (found_a_folder_in_arg_found==0)
+                found_a_folder_in_arg_found=1;
+                else {
+                // here we found 2 folders on the command line
+                usage();
+                return 1;
+                }
+        }
+        }
+        }
+        else {
         usage();
         return 1;
-      }
-      if (ret==2) {
-        //theses are to stop if we have 2 folders on commands line, in the future it will bepossible
-        if (found_a_folder_in_arg_found==0)
-            found_a_folder_in_arg_found=1;
-        else {
-          // here we found 2 folders on the command line
-          usage();
-          return 1;
         }
-      }
-    }
-  }
-    else {
-     usage();
-     return 1;
-    }
 
-  if (version_opt==1) {
-    version();
-    return 0;
-  }
+        if (version_opt==1) {
+        version();
+        return 0;
+        }
 
-  if (help_opt==1) {
-    usage();
-    return 0;
-  }
+        if (help_opt==1) {
+        usage();
+        return 0;
+        }
 
 
 #ifdef __CC65__
@@ -283,7 +283,20 @@ int main(int argc,char *argv[]) {
         }
 
         destfilename[i]='\0';
-        printf("Output filename :  %s\n",destfilename);
+
+        fp = fopen(destfilename, "r");
+        if (fp) {
+                printf("destination file %s exists. Overwrite [y/n] (default : n) ?\n", destfilename);
+                ret = cgetc();
+                if (ret != 'y') {
+                        printf("Aborted\n");
+                        return 1;
+                }
+                unlink(destfilename);
+        }
+        fclose(fp);
+
+        //printf("Output filename :  %s\n",destfilename);
 
         fp = fopen(argv[1], "r");
         if (fp==NULL) {
@@ -298,27 +311,30 @@ int main(int argc,char *argv[]) {
         printf("open %d bytes read\n", length);
 
         fclose(fp);
-        // if (length == sizeof(buffer)) {
-        //         printf("File is too big\n");
-        //         return 1;
-        // }
+        if (length == sizeof(buffer)) {
+                printf("File is too big\n");
+                return 1;
+        }
 
         /* decompress */
         length = uncompress_buffer(length);
-        printf("Length :  %u bytes\n",length);
         if (length == 0)
                 return 1;
 
         /* write uncompressed file */
         //printf("Uncompressed file name:\n");
+
+
+
         fp = fopen(destfilename, "wb");
         if (!fp) {
                 printf("Can't create output file\n");
                 return 1;
         }
+        // $23AF $2399
         nb_write = fwrite(buffer, 1, length, fp);
         if (nb_write != length) {
-               printf("Error while writing output file writing %u bytes, but fwrite returns %u bytes\n",length,nb_write);
+               printf("Error while writing output file writing %u bytes, but fwrite returns %u bytes\n", length, nb_write);
                 return 1;
         }
         fclose(fp);
