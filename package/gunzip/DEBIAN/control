@@ -1,0 +1,7 @@
+Package: gunzip
+Version: 2023.2
+Section: utils
+Priority: optional
+Architecture: all
+Maintainer: Jede
+Description: Gunzip
