@@ -4,8 +4,6 @@ PROGRAM=gunzip
 
 all: build docs package
 
-
-
 SOURCE=src/$(PROGRAM).c
 LDFILES=
 
@@ -26,10 +24,13 @@ endif
 build:
 	mkdir build/usr/share/man -p
 	mkdir build/bin -p
-	#$(CC) -o $(PROGRAM) $(CFLAGS) $(LDFILES) $(SOURCE) --start-addr \$800
-	$(CC) -o 1000 $(CFLAGS) $(LDFILES) $(SOURCE) --start-addr 0x800
-	$(CC) -o 1256 $(CFLAGS) $(LDFILES) $(SOURCE) --start-addr 0x900
+	ca65 -o inflatememfromfptofp.o src/lib_override/inflatememfromfptofp.s
+	ca65 -o orix_system.o src/orix_system.s
+
+	$(CC) -o 1000 $(CFLAGS) $(LDFILES) $(SOURCE) inflatememfromfptofp.o orix_system.o --start-addr 0x800
+	$(CC) -o 1256 $(CFLAGS) $(LDFILES) $(SOURCE) inflatememfromfptofp.o orix_system.o --start-addr 0x900
 	# Reloc
+
 	chmod +x dependencies/orix-sdk/bin/relocbin.py3
 	dependencies/orix-sdk/bin/relocbin.py3 -o build/bin/gunzip -2 1000 1256
 	cd docs && ../../md2hlp/src/md2hlp.py3 --file gunzip.md --output ../build/usr/share/man/gunzip.hlp && cd ..
